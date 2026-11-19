@@ -1,5 +1,16 @@
 # God's Eye View Current State
 
+Hamburg traffic-signal and RSU inventory layers are available under Infrastructure
+and default to off. The share-link tokens are `o` (signals) and `k` (RSU).
+Public Hamburg OGC APIs provide junction/site positions. The RSU layer includes
+only explicit R-ITS-S records, grouped by location/infrastructure; it does not
+infer online status or precise antenna locations. Selecting a signal junction
+loads its public SensorThings primary-signal observations every ten seconds.
+Each lane/group retains its own timestamp; old, future or unknown data is not
+treated as current. Deselect, layer disable and teardown cancel pending requests
+and polling. The UI distinguishes this process-data API from radio SPaT reception.
+Provider/data/license links remain in map credits. See [data sources](../DATA_SOURCES.md).
+
 This fork uses PolCam / WB Group branding for its header, loading screen,
 browser title, favicon and welcome-card header. The logo remains visible on
 small screens without overlapping the globe controls. Application behavior,

@@ -1,5 +1,9 @@
 # Changelog
 
+- Add optional Hamburg traffic-signal and RSU registry layers with source credits,
+  site details and selected-junction signal observations. Distinguish inventory
+  locations from live process data, and label stale or unavailable observations.
+
 - Apply PolCam / WB Group branding to the viewer header, loading screen,
   browser title, favicon and first-launch header. Preserve upstream licensing
   and data credits, and include a license link in the welcome card.

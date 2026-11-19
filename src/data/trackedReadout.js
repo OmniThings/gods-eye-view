@@ -220,6 +220,8 @@ export function getActiveTrackedReadoutId() {
 
 /** Static-context layers whose click selection publishes the readout card. */
 const READOUT_CONTEXT_LAYERS = new Set([
+  'hamburg-signals',
+  'hamburg-rsu',
   'military-installations',
   'alpr-cameras',
 ]);
