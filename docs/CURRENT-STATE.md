@@ -1,5 +1,12 @@
 # God's Eye View Current State
 
+This fork uses PolCam / WB Group branding for its header, loading screen,
+browser title, favicon and welcome-card header. The logo remains visible on
+small screens without overlapping the globe controls. Application behavior,
+data-source credits and upstream licensing are retained. The welcome card links
+to the bundled upstream license; PolCam and WB Group marks have separate terms
+in `public/branding/NOTICE.md`.
+
 AIS encodes speed over ground in 0.1-knot units and course over ground in
 0.1-degree units, reserving the top code of each field for "not available", so
 those reports arrive as 102.3 knots and 360 degrees. Both are stored as unknown,
