@@ -13,6 +13,40 @@ How to read this:
 
 ## Live sources (fetched at runtime — not stored in this repo)
 
+### Hamburg traffic signals and RSU registry
+
+The optional **Hamburg · Sygnalizacja** and **Hamburg · RSU** layers fetch public
+Hamburg APIs directly in the browser, without an account or API key:
+
+- [Traffic-signal inventory](https://api.hamburg.de/datasets/v1/lichtsignalanlagen):
+  `collections/lsa_knotengrunddaten/items`. Points represent junction installations,
+  not individual signal heads; the inventory excludes the Hamburg Port Authority area.
+- [ITS equipment registry](https://api.hamburg.de/datasets/v1/its_dienste_hamburg):
+  `collections/its_iot_registry/items`, filtered by `device_type = 'R-ITS-S'`.
+  Service rows are aggregated by location and infrastructure identifiers. These
+  are registered RSU sites, not an exact antenna survey or a device-online feed.
+  No installed/planned/online status is inferred from membership in this registry.
+- [Traffic Lights Data](https://tld.iot.hamburg.de/v1.1): on-demand primary signal
+  observations for the selected junction, refreshed every ten seconds while selected.
+  Values apply to individual signal groups/lane connections. Observations older
+  than 60 seconds, future timestamps, and unknown values are not presented as fresh.
+  The public SensorThings process-data API is distinct from radio V2X/SPaT reception.
+
+Provider: **Freie und Hansestadt Hamburg, Landesbetrieb Straßen, Brücken und Gewässer**.
+All three sources use [Data licence Germany – attribution – version 2.0
+(dl-de/by-2-0)](https://www.govdata.de/dl-de/by-2-0). Source records are processed:
+coordinates and names are normalized, RSU service rows are grouped by site, and
+signal values are translated into display labels. Provider, dataset and licence
+links are included in the map credits. Inventory download time is not a device
+observation time. No third-party inventory or telemetry is bundled in the repository.
+
+Verified on 2026-11-19: 1740 junctions and 162 RSU service entries representing
+150 sites; counts can change at the source. Dataset metadata: [signals](https://suche.transparenz.hamburg.de/dataset/lichtsignalanlagen-hamburg46),
+[ITS](https://metaver.de/trefferanzeige?docuuid=DEA84BC4-535B-48DC-9210-E52AA815B36D),
+[TLD](https://suche.transparenz.hamburg.de/dataset/traffic-lights-data-hamburg3).
+
+### Other runtime sources
+
 | Source                                                                | Used for                                                                                                                            | License / terms                                                                                                                                                                                                                                                                                                                                       | Attribution                                                                                                                                 |
 | --------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
 | **OpenStreetMap ALPR camera locations** (including DeFlock community mapping) | Optional mapped automatic license-plate-reader camera layer | [ODbL 1.0](https://opendatacommons.org/licenses/odbl/1-0/); commercial use permitted with applicable attribution and database share-alike obligations | [© OpenStreetMap contributors](https://www.openstreetmap.org/copyright); [DeFlock](https://deflock.org) community mapping |

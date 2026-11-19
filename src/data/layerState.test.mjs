@@ -158,8 +158,8 @@ function encode(state) {
 
 test('production registry is exact, canonical, and rejects incomplete contracts', async () => {
   assert.equal(validateLayerStateRegistry(), true);
-  assert.equal(REGISTERED_LAYER_IDS.length, 21);
-  assert.equal(new Set(REGISTERED_LAYER_IDS).size, 21);
+  assert.equal(REGISTERED_LAYER_IDS.length, 23);
+  assert.equal(new Set(REGISTERED_LAYER_IDS).size, 23);
   assert.ok(REGISTERED_LAYER_IDS.includes('transit'));
   assert.deepEqual(REGISTERED_LAYER_IDS, [...REGISTERED_LAYER_IDS].sort());
   assert.throws(
@@ -188,6 +188,16 @@ test('production registry is exact, canonical, and rejects incomplete contracts'
   assert.equal(qaManager.layers.has('radio'), true);
   assert.equal(await qaManager.unregisterForQa('radio'), true);
   assert.equal(qaManager.layers.has('radio'), false);
+});
+
+test('Hamburg layers remain opt-in and round-trip independently in shared views', () => {
+  assert.ok(!createDefaultLayerState().enabledLayerIds.includes('hamburg-signals'));
+  assert.ok(!createDefaultLayerState().enabledLayerIds.includes('hamburg-rsu'));
+  for (const ids of [['hamburg-signals'], ['hamburg-rsu'], ['hamburg-signals', 'hamburg-rsu']]) {
+    const params = new URLSearchParams('v=2');
+    encodeLayerStateParams(params, normalizeLayerState({ enabledLayerIds: ids }));
+    assert.deepEqual(decodeLayerStateParams(params).enabledLayerIds, [...ids].sort());
+  }
 });
 
 test('v2 codec distinguishes absent from empty and keeps canonical deterministic ordering', () => {

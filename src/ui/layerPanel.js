@@ -33,6 +33,8 @@ const PANEL_GROUPS = [
   {
     label: 'Infrastructure',
     ids: [
+      'hamburg-signals',
+      'hamburg-rsu',
       'military-installations',
       'local-datacenters',
       'telegeography-submarine-cables',

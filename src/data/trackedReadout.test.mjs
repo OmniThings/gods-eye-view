@@ -230,6 +230,14 @@ test('selection lifecycle ignores vessels, accepts installations, and clears wit
     assert.equal(getActiveTrackedReadoutId(), 'alpr:42');
     assert.equal(recorder.calls.filter(({ op }) => op === 'set').at(-1).entries[0].title, 'FLOCK SAFETY ALPR');
 
+    for (const layerId of ['hamburg-signals', 'hamburg-rsu']) {
+      const hamburg = { ...camera, gevTrackedId: `${layerId}:site-1`, gevLabelModel: { title: 'Hamburg site', details: ['INVENTORY'] } };
+      fakeWindow.dispatchEvent(new CustomEvent('gev:entity-selected', { detail: { layerId, entity: hamburg } }));
+      assert.equal(getActiveTrackedReadoutId(), `${layerId}:site-1`);
+      assert.equal(recorder.calls.filter(({ op }) => op === 'set').at(-1).entries[0].title, 'Hamburg site');
+    }
+
+
     fakeWindow.dispatchEvent(new CustomEvent('gev:entity-selected', {
       detail: { layerId: 'ais-live-vessels', entity: installation },
     }));

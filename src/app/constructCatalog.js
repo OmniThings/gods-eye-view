@@ -16,6 +16,7 @@ import { createApplicationLaunches } from './layers/rocketLaunches.js';
 import { createApplicationAlpr } from './layers/alprCameras.js';
 import { createApplicationAwareness } from './layers/militaryAwareness.js';
 import { createApplicationFirms } from './layers/firms.js';
+import { createApplicationHamburg } from './layers/hamburg.js';
 import { createApplicationEarthquakes } from './layers/earthquakes.js';
 import { createApplicationCables } from './layers/submarineCables.js';
 import { createInfrastructureLayers } from '../data/infrastructure.js';
@@ -43,6 +44,7 @@ const SOURCE_METHODS = Object.freeze({
   alpr: ['fetch'],
   firms: ['getSnapshot'],
   earthquakes: ['getSnapshot'],
+  hamburg: ['getSnapshot', 'getSignals'],
   cables: ['fetch'],
 });
 
@@ -128,6 +130,7 @@ export function createApplicationCatalog({
           vessels,
           installations,
         }),
+        ...createApplicationHamburg({ source: sources.hamburg }),
         ...createInfrastructureLayers(localGeoJsonServices),
         createApplicationCables({ source: sources.cables }),
         createApplicationFirms({

@@ -337,6 +337,12 @@ export const LAYER_STATE_REGISTRY = Object.freeze([
     disposition: 'enabled+options',
     optionOwner: 'flights',
   }),
+  Object.freeze({ id: 'hamburg-rsu', token: 'k', disposition: 'enabled-only' }),
+  Object.freeze({
+    id: 'hamburg-signals',
+    token: 'o',
+    disposition: 'enabled-only',
+  }),
   Object.freeze({ id: 'local-dams', token: 'q', disposition: 'enabled-only' }),
   Object.freeze({
     id: 'local-datacenters',
