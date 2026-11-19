@@ -1,0 +1,70 @@
+/* Deployment identity. Keep upstream behavior, source and data credits intact. */
+:root {
+  --accent: #58b8eb;
+  --accent-dim: rgba(88, 184, 235, 0.15);
+  --accent-glow: rgba(88, 184, 235, 0.35);
+}
+
+.brand-logo.polcam-brand-logo {
+  aspect-ratio: 513 / 187;
+  filter: none;
+}
+
+#title-bar h1 > .title-logo.polcam-brand-logo {
+  display: block;
+  width: 190px;
+  height: auto;
+  filter: none;
+}
+
+#title-bar .title-glow {
+  background: #1f3864;
+}
+
+#title-bar .subtitle {
+  margin-top: 0;
+  font-size: 10px;
+  letter-spacing: 2.3px;
+  color: rgba(232, 234, 237, 0.7);
+}
+
+.loader-logo.polcam-brand-logo {
+  width: min(320px, 80vw);
+  margin-bottom: 20px;
+  animation: none;
+}
+
+.loader-content h2 {
+  letter-spacing: 2px;
+}
+
+@media (max-width: 720px) {
+  #title-bar h1 > .title-logo.polcam-brand-logo {
+    width: 140px;
+  }
+
+  #title-bar .subtitle {
+    font-size: 8px;
+    letter-spacing: 1.4px;
+  }
+}
+
+@media (max-width: 520px) {
+  #title-bar h1 > .title-logo.polcam-brand-logo {
+    width: 112px;
+  }
+}
+
+.polcam-credits {
+  align-self: flex-start;
+  margin-top: 10px;
+  color: var(--text-secondary);
+  font: 10px var(--font-mono);
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 360px) {
+  #title-bar h1 > .title-logo.polcam-brand-logo {
+    width: 72px;
+  }
+}

@@ -1,5 +1,9 @@
 # Changelog
 
+- Apply PolCam / WB Group branding to the viewer header, loading screen,
+  browser title, favicon and first-launch header. Preserve upstream licensing
+  and data credits, and include a license link in the welcome card.
+
 - Enable responsive trackpad pinch zoom on the globe. Browser pixel-mode
   `Ctrl+wheel` pinch gestures now reach Cesium with bounded amplification,
   while ordinary wheel, line-mode and touch-pinch inputs retain their existing
