@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { CustomDataSource } from 'cesium';
 import { createHamburgLayer, hamburgSignalDetails } from './index.js';
 
 const row = (id = 'a', kind = 'signals') => ({
@@ -90,10 +91,12 @@ async function harness(source, kind = 'signals') {
           }),
         );
       },
-      removeEntityContextsForLayer(id) {
+      removeEntityContextsForLayer(id, { retainIds } = {}) {
         for (const [key, value] of contexts)
-          if (value.layerId === id) contexts.delete(key);
-        this.clearSelectedEntityContextForLayer(id);
+          if (value.layerId === id && !retainIds?.has(key))
+            contexts.delete(key);
+        if (selected && !contexts.has(selected.id))
+          this.clearSelectedEntityContextForLayer(id);
       },
     },
   };
@@ -325,4 +328,49 @@ test('freshness is explicitly dated to acquisition and includes each observation
     hamburgSignalDetails({ ...data, truncated: true }, time).join('\n'),
     /Pokazano 1 z 1\+/,
   );
+});
+
+test('Cesium entities retain identity across refresh and re-enable while stale sites are removed', async () => {
+  let snapshot = inventory([row('a', 'rsu'), row('b', 'rsu')]);
+  const h = await harness({ getSnapshot: async () => snapshot }, 'rsu');
+  const dataSource = h.sources[0];
+  assert.ok(dataSource instanceof CustomDataSource);
+  await h.layer.update(h.viewer);
+  const original = dataSource.entities.getById('hamburg-rsu:a');
+  const previousPosition = original.position.getValue();
+  const removed = dataSource.entities.getById('hamburg-rsu:b');
+  const removedEvents = [];
+  dataSource.entities.collectionChanged.addEventListener(
+    (_collection, _added, dropped) => removedEvents.push(...dropped),
+  );
+  h.select('a');
+  snapshot = inventory([
+    { ...row('a', 'rsu'), name: 'Updated site', lon: 10.01 },
+    row('c', 'rsu'),
+  ]);
+  await h.layer.update(h.viewer);
+  assert.equal(
+    dataSource.entities.getById('hamburg-rsu:a'),
+    original,
+    'renderer and current collection must retain the same Entity reference',
+  );
+  assert.equal(original.name, 'Updated site');
+  assert.notEqual(original.position.getValue().x, previousPosition.x);
+  assert.equal(h.selected().entity, original);
+  assert.equal(dataSource.entities.getById('hamburg-rsu:b'), undefined);
+  assert.ok(removedEvents.includes(removed));
+  assert.ok(!removedEvents.includes(original));
+  assert.equal(h.contexts.has('hamburg-rsu:b'), false);
+  assert.ok(dataSource.entities.getById('hamburg-rsu:c'));
+  h.layer.disable();
+  h.layer.enable();
+  await h.layer.update(h.viewer);
+  assert.equal(
+    dataSource.entities.getById('hamburg-rsu:a'),
+    original,
+    'enabling and refreshing again must not detach the pick carrier',
+  );
+  h.select('a');
+  assert.equal(h.selected().entity, original);
+  h.layer.destroy();
 });

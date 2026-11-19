@@ -365,42 +365,56 @@ export function createHamburgLayer({
         const retainedId = selectedId;
         const retained = retainedId && stillSelected(retainedId);
         stopSignals();
+        const retainedContextIds = new Set(
+          snapshot.rows.map((row) => contextId(row.id)),
+        );
         dataSource.entities.suspendEvents();
         try {
-          dataSource.entities.removeAll();
-          context.removeEntityContextsForLayer(id);
+          // Keep each retained Entity alive. Removing and re-adding an ID in
+          // one suspended Cesium batch suppresses its collection event and
+          // leaves the visualizer (and picking) holding the old Entity.
+          for (const entity of [...dataSource.entities.values]) {
+            if (!retainedContextIds.has(entity.id))
+              dataSource.entities.remove(entity);
+          }
+          context.removeEntityContextsForLayer(id, {
+            retainIds: retainedContextIds,
+          });
           rows = new Map();
           lastUpdate = snapshot.fetchedAt;
           for (const row of snapshot.rows) {
             const position = Cesium.Cartesian3.fromDegrees(row.lon, row.lat, 4);
-            const entity = dataSource.entities.add({
-              id: contextId(row.id),
-              name: compact(row.name),
-              position,
-              point: {
-                pixelSize: appearance.size,
-                color:
-                  kind === 'rsu'
-                    ? Cesium.Color.fromCssColorString(color).withAlpha(0.12)
-                    : Cesium.Color.fromCssColorString(color),
-                outlineColor: Cesium.Color.fromCssColorString(
-                  kind === 'rsu' ? color : '#10202c',
-                ),
-                outlineWidth: kind === 'rsu' ? 3 : 2,
-                heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
-                disableDepthTestDistance: Number.POSITIVE_INFINITY,
-                distanceDisplayCondition: new Cesium.DistanceDisplayCondition(
-                  0,
-                  150_000,
-                ),
-                scaleByDistance: new Cesium.NearFarScalar(
-                  500,
-                  1.3,
-                  100_000,
-                  0.65,
-                ),
-              },
-            });
+            const entity =
+              dataSource.entities.getById(contextId(row.id)) ||
+              dataSource.entities.add({
+                id: contextId(row.id),
+                point: {
+                  pixelSize: appearance.size,
+                  color:
+                    kind === 'rsu'
+                      ? Cesium.Color.fromCssColorString(color).withAlpha(0.12)
+                      : Cesium.Color.fromCssColorString(color),
+                  outlineColor: Cesium.Color.fromCssColorString(
+                    kind === 'rsu' ? color : '#10202c',
+                  ),
+                  outlineWidth: kind === 'rsu' ? 3 : 2,
+                  heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+                  disableDepthTestDistance: Number.POSITIVE_INFINITY,
+                  distanceDisplayCondition: new Cesium.DistanceDisplayCondition(
+                    0,
+                    150_000,
+                  ),
+                  scaleByDistance: new Cesium.NearFarScalar(
+                    500,
+                    1.3,
+                    100_000,
+                    0.65,
+                  ),
+                },
+              });
+            entity.name = compact(row.name);
+            entity.position = position;
+            entity.point.pixelSize = appearance.size;
             entity.gevHamburgLayerId = id;
             entity.gevHamburgRowId = String(row.id);
             entity.gevTrackedId = contextId(row.id);
