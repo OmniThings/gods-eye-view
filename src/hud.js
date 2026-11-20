@@ -1,12 +1,10 @@
 import { applicationServices } from './services/application.js';
 /**
  * @module hud
- * @description Intelligence HUD Overlay — NRO/NGA Satellite Aesthetic.
+ * @description PolCam map context and camera telemetry.
  *
- * Renders authentic reconnaissance metadata over the Cesium canvas:
- * classification banners, live MGRS/lat-lon coordinates, sensor metrics
- * (GSD, NIIRS, ONA), timestamps, and orbital data — all updating in
- * real-time at configurable cadences.
+ * Renders map context, MGRS/lat-lon coordinates, camera height and view
+ * angle with a UTC clock. These are view telemetry, not sensor observations.
  *
  * The HUD auto-activates when a military-style shader (NVG, FLIR, CRT) is
  * selected and supports three layout variants: tactical, operator, minimal.
@@ -77,10 +75,9 @@ const NEARBY_POINTS = Object.values(CITY_POIS).flatMap((city) =>
 /**
  * Full-screen intelligence HUD overlay rendered on top of the Cesium canvas.
  *
- * Displays classification banners, MGRS/lat-lon readouts, sensor metrics
- * (GSD, NIIRS, off-nadir angle), sun elevation, orbital metadata, and a
- * rolling semantic summary line. All values derive from the live camera
- * position and update on independent timer cadences.
+ * Displays MGRS/lat-lon readouts, camera height and angle, sun elevation,
+ * UTC and map context. View telemetry derives from the live camera;
+ * source observations remain owned by their data layers.
  */
 export class IntelHUD {
   /**
@@ -106,9 +103,7 @@ export class IntelHUD {
     this._currentStyle = 'normal';
     this._el = null;
     this._variant = 'tactical';
-    this._recBlinkState = true;
     this._updateInterval = null;
-    this._recBlinkInterval = null;
     this._timestampInterval = null;
     this._summaryInterval = null;
     this._summaryTypingInterval = null;
@@ -157,12 +152,6 @@ export class IntelHUD {
       }
     };
 
-    // Session-consistent pseudorandom identifiers (generated once at construction)
-    this._missionId = `KH11-${4000 + Math.floor(Math.random() * 200)}`;
-    this._sensorId = `OPS-${4100 + Math.floor(Math.random() * 100)}`;
-    this._orbitNum = 47000 + Math.floor(Math.random() * 1000);
-    this._passNum = 100 + Math.floor(Math.random() * 200);
-
     this._buildDOM();
     this.viewer.camera.moveEnd.addEventListener(this._onCameraMoveEnd);
     this._startTimers();
@@ -170,79 +159,28 @@ export class IntelHUD {
 
   /**
    * Construct the HUD DOM structure inside the existing `#intel-hud` element.
-   * Populates corner brackets, classification banners, sensor readouts,
-   * edge metadata strips, and the bottom summary bar.
+   * Builds the PolCam map-context panel and lower telemetry strip.
    */
   _buildDOM() {
     this._el = document.getElementById('intel-hud');
     if (!this._el) return;
 
     this._el.innerHTML = `
-      <div class="hud-top-bar">
-        <span class="hud-top-bar-left">TOP SECRET // SI-TK // NOFORN</span>
-        <span class="hud-top-bar-center">${this._missionId}</span>
-        <span class="hud-top-bar-right">PAGE 1/1</span>
-      </div>
-
-      <div class="hud-corner hud-top-left">
-        <div class="hud-bracket">┌</div>
-        <div class="hud-content">
-          <div class="hud-classification">TOP SECRET // SI-TK // NOFORN</div>
-          <div class="hud-system">${this._missionId}  ${this._sensorId}</div>
-          <div class="hud-mode" id="hud-mode">NORMAL</div>
-          <div class="hud-summary-wrap">
-            <div class="hud-summary-label">SUMMARY</div>
-            <div class="hud-summary" id="hud-summary">Awaiting telemetry...</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="hud-corner hud-top-right">
-        <div class="hud-content" style="text-align:right">
-          <div class="hud-rec"><span id="hud-rec-dot">●</span> REC  <span id="hud-timestamp">2026-01-01 00:00:00Z</span></div>
-          <div class="hud-orbital">ORB: ${this._orbitNum}  PASS: DESC-${this._passNum}</div>
-        </div>
-        <div class="hud-bracket">┐</div>
-      </div>
-
-      <div class="hud-corner hud-bottom-left">
-        <div class="hud-bracket">└</div>
-        <div class="hud-content">
-          <div id="hud-mgrs">MGRS: ---</div>
-          <div id="hud-latlon">--°--'--"N ---°--'--"W</div>
-        </div>
-      </div>
-
-      <div class="hud-corner hud-bottom-right">
-        <div class="hud-content" style="text-align:right">
-          <div id="hud-gsd">GSD: --m  NIIRS: --</div>
-          <div id="hud-alt">ALT: --m   SUN: --° EL</div>
-          <div id="hud-ais-vessel" class="hud-ais-vessel">AIS: --</div>
-        </div>
-        <div class="hud-bracket">┘</div>
-      </div>
-
-      <div class="hud-edge hud-left-edge">
-        <div id="hud-coll">COLL: --:--:--Z</div>
-        <div id="hud-ona">ONA: --°</div>
-      </div>
-
-      <div class="hud-edge hud-right-edge">
-        <div>BAND: PAN</div>
-        <div>BITS: 11</div>
-        <div>LVL: 1A</div>
-      </div>
-
-      <div class="hud-bottom-bar">
-        <span id="hud-bottom-line">LAT: --  LON: --  MGRS: ---</span>
-      </div>
+      <section class="polcam-map-context" aria-label="Map context">
+        <span class="polcam-context-title">PolCam <span id="hud-mode">NORMAL</span></span>
+        <div class="hud-summary" id="hud-summary">Awaiting map context...</div>
+      </section>
+      <footer class="polcam-statusbar" aria-label="Map coordinates and view telemetry">
+        <div class="polcam-position"><span id="hud-latlon">Coordinates —</span><span id="hud-mgrs">MGRS: —</span></div>
+        <div class="polcam-camera"><span id="hud-alt">ALT: —</span><span id="hud-ona">ONA: —</span><span id="hud-ais-vessel" class="hud-ais-vessel">AIS: —</span></div>
+        <time id="hud-timestamp">${this._formatUTC()}</time>
+      </footer>
     `;
     this._el.dataset.variant = this._variant;
   }
 
   /**
-   * Start all periodic update timers (timestamp, REC blink, camera
-   * telemetry, semantic summary). Timers run independently at different
+   * Start periodic update timers (timestamp, camera telemetry and summary). Timers run independently at different
    * cadences and are cleaned up in {@link destroy}.
    */
   _startTimers() {
@@ -251,14 +189,6 @@ export class IntelHUD {
       const el = document.getElementById('hud-timestamp');
       if (el) el.textContent = this._formatUTC();
     }, 1000);
-
-    // REC blink — every 800ms
-    this._recBlinkInterval = setInterval(() => {
-      this._recBlinkState = !this._recBlinkState;
-      const dot = document.getElementById('hud-rec-dot');
-      if (dot)
-        dot.style.visibility = this._recBlinkState ? 'visible' : 'hidden';
-    }, 800);
 
     // Camera-derived data — 4 updates/second (250ms)
     this._updateInterval = setInterval(() => {
@@ -913,7 +843,6 @@ export class IntelHUD {
   /** Tear down all running intervals. Call when discarding the HUD instance. */
   destroy() {
     clearInterval(this._updateInterval);
-    clearInterval(this._recBlinkInterval);
     clearInterval(this._timestampInterval);
     clearInterval(this._summaryInterval);
     clearInterval(this._summaryTypingInterval);

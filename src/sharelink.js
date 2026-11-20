@@ -116,10 +116,9 @@ export class ShareLinkManager {
     // question and deliberately stays at 5.
     this._detectionOutsideOpacityPct = 1;
     this._celestialRingEnabled = false;
-    this._scopeEnabled = true;
-    // Feather opens on a soft 11% scope-mask edge (owner final lock 2026-08-24,
-    // superseding the 08-22 hard-crop and 08-23 8% rulings) — mirrors
-    // SCOPE_FEATHER_RATIO_DEFAULT in scopeMask.js and the slider's markup value.
+    this._scopeEnabled = false;
+    // Retain legacy tuning values for archived scenes. PolCam never draws the
+    // peripheral mask and always serializes sc=0.
     this._scopeFeatherPct = 11;
     // null = the altitude-adaptive terminus (the default). A number pins the
     // outside-fill opacity as a percent, 94..100. (`sce`, 2026-08-17)
@@ -219,17 +218,10 @@ export class ShareLinkManager {
         Math.min(100, Math.round(parseOr(params.get('ko'), 5))),
       ),
       celestialRing: params.has('cr') ? params.get('cr') === '1' : false,
-      scopeEnabled: params.has('sc') ? params.get('sc') === '1' : true,
-      // Deliberately still 35 through both later default moves (0 on
-      // 2026-08-22, 8 on 2026-08-23). This is the PARSE fallback for a link that
-      // predates `scf` entirely, and such a link was authored when 35 was what
-      // its author saw — restoring their view is the point of a share link. A
-      // link from the feather-0 era is unaffected either way: it carries
-      // `scf=0` explicitly, because the generator always writes the field. The
-      // first-run default is a different question, answered in scopeMask.js.
-      // (`_scopeFeatherPct` in the constructor tracks the default: that one
-      // mirrors live state for the link this session generates, so it must match
-      // the mask, not the archive.)
+      // PolCam has no peripheral mask, including when a legacy link asks for it.
+      scopeEnabled: false,
+      // Historical links without scf used 35. Keep parsing that value for
+      // compatibility; it cannot change the unobscured PolCam viewport.
       scopeFeatherPct: Math.max(
         0,
         Math.min(100, Math.round(parseOr(params.get('scf'), 35))),
@@ -494,8 +486,7 @@ export class ShareLinkManager {
     }
     if (typeof extras.celestialRingEnabled === 'boolean')
       this._celestialRingEnabled = extras.celestialRingEnabled;
-    if (typeof extras.scopeEnabled === 'boolean')
-      this._scopeEnabled = extras.scopeEnabled;
+    this._scopeEnabled = false; // Older scene/voice state cannot restore the mask.
     if (typeof extras.scopeFeatherPct === 'number') {
       this._scopeFeatherPct = Math.max(
         0,

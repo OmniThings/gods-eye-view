@@ -1274,7 +1274,7 @@ test('UI exclusions stay per-rect: overlapping chrome never merges into a boundi
     height: 300,
     dpr: 1,
     occluders: [
-      { id: 'left-panel-stack', rect: chrome.left },
+      { id: 'data-panel', parent: '#left-panel-stack', rect: chrome.left },
       { id: 'command-dock', rect: chrome.bottom },
     ],
   });
@@ -1321,14 +1321,15 @@ test('UI exclusions ignore chrome the user cannot see', () => {
     height: 300,
     dpr: 1,
     occluders: [
-      { id: 'left-panel-stack', rect: { left: 0, top: 0, width: 400, height: 300 }, hidden: true },
+      { id: 'data-panel', parent: '#left-panel-stack', rect: { left: 0, top: 0, width: 400, height: 300 }, hidden: true },
       {
         id: 'command-dock',
         rect: { left: 0, top: 0, width: 400, height: 300 },
         style: { display: 'none' },
       },
       {
-        id: 'right-context-rail',
+        id: 'global-context-panel',
+        parent: '#right-context-rail',
         rect: { left: 0, top: 0, width: 400, height: 300 },
         style: { visibility: 'hidden' },
       },
@@ -1412,7 +1413,7 @@ test('a placement is only ever kept under chrome that composites ABOVE the host'
   const viewport = { left: 0, top: 0, width: 400, height: 300 };
   // Above the host: unplaceable is still safe, so the card is kept and the panel
   // simply covers it — the behaviour that fixed the cockpit blackout.
-  assert.equal(paintedUnder([{ id: 'left-panel-stack', rect: viewport }]), 1,
+  assert.equal(paintedUnder([{ id: 'data-panel', parent: '#left-panel-stack', rect: viewport }]), 1,
     'chrome above the host keeps the soft preference');
   // Below the host: no placement may overlap it, so the entry is vetoed instead
   // of painting over HUD text. `.hud-top-left` is nested in #intel-hud, so this
@@ -2222,4 +2223,13 @@ test('diagnostics facade preserves the complete binding shape', () => {
     'candidateIndexSize', 'entriesBySource', 'paintedBySource',
   ];
   assert.deepEqual(Object.keys(diagnostics).sort(), fields.sort());
+});
+
+
+test('PolCam transparent rail lanes are not occluders; only their actual panels are', () => {
+  assert.equal(WORLD_OVERLAY_OCCLUDER_SELECTORS.includes('#left-panel-stack'), false);
+  assert.equal(WORLD_OVERLAY_OCCLUDER_SELECTORS.includes('#right-context-rail'), false);
+  for (const selector of ['#data-panel', '#scene-panel', '#pp-toggles', '#cctv-panel', '#global-context-panel', '.polcam-map-context', '.polcam-appbar', '.polcam-statusbar']) {
+    assert.ok(WORLD_OVERLAY_OCCLUDER_SELECTORS.includes(selector), selector);
+  }
 });

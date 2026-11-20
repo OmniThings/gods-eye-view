@@ -8,21 +8,21 @@
 
 /** Shared visual tokens used by every world-overlay source. */
 export const WORLD_OVERLAY_STYLE = Object.freeze({
-  background: 'rgba(4, 12, 16, 0.82)',
-  selectedBackground: 'rgba(5, 18, 24, 0.94)',
+  background: 'rgba(16, 34, 70, 0.82)',
+  selectedBackground: 'rgba(26, 48, 119, 0.94)',
   border: 'rgba(190, 232, 242, 0.18)',
   selectedBorder: 'rgba(107, 232, 255, 0.72)',
   title: 'rgba(232, 240, 244, 0.96)',
   detail: 'rgba(147, 161, 173, 0.92)',
   leader: 'rgba(147, 213, 228, 0.58)',
-  accent: '#6be8ff',
-  fontLabel: '500 10px "JetBrains Mono", monospace',
-  fontTrack: '600 10px "JetBrains Mono", monospace',
-  fontTitle: '600 12px "JetBrains Mono", monospace',
-  fontDetail: '500 10.5px "JetBrains Mono", monospace',
-  fontSelected: '600 13px "JetBrains Mono", monospace',
-  fontTrackedTitle: '600 13px "JetBrains Mono", monospace',
-  fontTrackedDetail: '500 11px "JetBrains Mono", monospace',
+  accent: '#9dcfff',
+  fontLabel: '500 10px "Roboto Condensed", Arial, sans-serif',
+  fontTrack: '600 10px "Roboto Condensed", Arial, sans-serif',
+  fontTitle: '600 12px "Roboto Condensed", Arial, sans-serif',
+  fontDetail: '500 10.5px "Roboto Condensed", Arial, sans-serif',
+  fontSelected: '600 13px "Roboto Condensed", Arial, sans-serif',
+  fontTrackedTitle: '600 13px "Roboto Condensed", Arial, sans-serif',
+  fontTrackedDetail: '500 11px "Roboto Condensed", Arial, sans-serif',
   radius: 4,
   anchorDotRadius: 3.2,
   anchorDotStrokeWidth: 1,
@@ -37,7 +37,7 @@ export const CCTV_THUMBNAIL_STYLE = Object.freeze({
   titleChars: 15,
   background: WORLD_OVERLAY_STYLE.background,
   titleColor: 'rgba(210, 236, 244, 0.95)',
-  titleFont: '600 10px "JetBrains Mono", monospace',
+  titleFont: '600 10px "Roboto Condensed", Arial, sans-serif',
   accent: 'rgb(107, 232, 255)',
   leader: 'rgba(107, 232, 255, 0.6)',
   rule: 'rgba(107, 232, 255, 0.95)',
@@ -47,8 +47,8 @@ export const CCTV_THUMBNAIL_STYLE = Object.freeze({
 
 /** Detection fonts and compositor glow retained exactly from the source renderer. */
 export const DETECTION_STYLE = Object.freeze({
-  font: '10px JetBrains Mono, monospace',
-  microFont: '9px JetBrains Mono, monospace',
+  font: '10px "Roboto Condensed", Arial, sans-serif',
+  microFont: '9px "Roboto Condensed", Arial, sans-serif',
   glowPx: 3,
 });
 

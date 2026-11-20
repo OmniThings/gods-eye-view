@@ -1,5 +1,6 @@
 /** Own rail measurement, layout scheduling and dock tray observation. */
 import { layoutLeftPanelRail, layoutRightPanelRail } from './panelRails.js';
+import { layoutPolcamPanelRail } from './polcamPanelRail.js';
 const COCKPIT_LAYOUT_SETTLE_MS = 240;
 /**
  * Fixed UI regions that can occupy the left accordion's vertical lane.
@@ -295,6 +296,13 @@ export class PanelLayoutController {
 
   _syncRightPanelAdaptiveLayout() {
     if (this.destroyed) return;
+    if (document.body?.dataset?.layout === 'polcam') {
+      layoutPolcamPanelRail({
+        stack: this._rightPanelStack,
+        onRestore: (panel) => this._syncPanelCollapseButton(panel),
+      });
+      return;
+    }
     layoutRightPanelRail({
       stack: this._rightPanelStack,
       obstacles: document.querySelectorAll(RIGHT_STACK_OBSTACLE_SELECTOR),
@@ -429,6 +437,13 @@ export class PanelLayoutController {
 
   _syncLeftPanelAdaptiveLayout() {
     if (this.destroyed) return;
+    if (document.body?.dataset?.layout === 'polcam') {
+      layoutPolcamPanelRail({
+        stack: this._leftPanelStack,
+        onRestore: (panel) => this._syncPanelCollapseButton(panel),
+      });
+      return;
+    }
     layoutLeftPanelRail({
       stack: this._leftPanelStack,
       obstacles: document.querySelectorAll(LEFT_STACK_OBSTACLE_SELECTOR),
