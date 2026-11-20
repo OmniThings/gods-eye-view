@@ -10,10 +10,8 @@ import { expandApplicationHtml } from '../build/application-html.js';
 //      Pinned in `data/layerState.test.mjs`, next to the coordinator that
 //      actually decides fresh-boot layer state — including the early return that
 //      makes each layer's own initializer the operative default.
-//   2. Scope feather. Owner: "I like to hide feather" set it to 0% on
-//      2026-08-22; the owner revised that to 8% on 2026-08-23 and locked 11%
-//      on 2026-08-24, a soft
-//      edge. The hard crop is still one drag away, and that is pinned too.
+//   2. PolCam retires the peripheral Scope mask, including old enable requests.
+//      Historical tuning values remain parseable but no control is exposed.
 //   3. Detection ON (Dense @ 75%) for EVERY style, Normal included.
 //      Owner: "detect should also be on by default."
 //   4. Detection OUTSIDE opacity 1% (owner final lock, 2026-08-24; 3% on 08-23, 5% before), with
@@ -25,8 +23,7 @@ import { expandApplicationHtml } from '../build/application-html.js';
 //   • the first-run VALUE, at every surface that independently decides it — a
 //     fresh boot runs no restore, so these literals ARE the startup state and
 //     changing one alone ships a UI that disagrees with its own engine;
-//   • explicit state still WINS over it — a link, or the operator's own hand,
-//     because "default" means "what you get when you said nothing";
+//   • explicit state wins for supported controls; retired Scope stays disabled;
 //   • the surrounding override machinery is INTACT, so a default flip cannot
 //     quietly take a separate landed behaviour with it.
 import test from 'node:test';
@@ -40,6 +37,7 @@ import {
   getScopeMaskFeather,
   scopeMaskGeometry,
   setScopeMaskFeather,
+  isScopeMaskEnabled,
 } from './scopeMask.js';
 import { ShareLinkManager } from './sharelink.js';
 
@@ -75,30 +73,16 @@ function managerForHash(hash) {
 }
 
 // ---------------------------------------------------------------------------
-// 2. Scope feather — a subtle soft edge on a first run
+// 2. Scope retirement and compatibility with historical tuning
 // ---------------------------------------------------------------------------
 
-test('first run opens with a subtle scope feather, at every surface that decides it', () => {
-  assert.equal(SCOPE_FEATHER_RATIO_DEFAULT, 0.11,
-    'owner final lock 2026-08-24, superseding the 08-22 hard-crop and 08-23 8% rulings');
-  assert.equal(getScopeMaskFeather(), 0.11,
-    'and the live module starts there, not merely documents it');
-
-  // The slider and its readout are the same default rendered as markup — a
-  // fresh boot applies no restore, so a stale value here would show one number
-  // over a mask drawn at another.
-  assert.match(indexHtml, /id="scope-feather-slider"[^>]*\svalue="11"/,
-    'index.html: the feather slider ships at 11');
-  assert.match(indexHtml, /id="scope-feather-value"[^>]*>11%</,
-    'index.html: and its readout agrees with the handle');
-
-  // The link this session generates must describe the mask this session draws,
-  // for the window before the first _syncShareState.
-  assert.match(shareSource, /this\._scopeFeatherPct = 11;/,
-    'sharelink.js: the generator starts from the same value the mask starts at');
+test('PolCam opens without a peripheral mask and exposes no retired scope controls', () => {
+  assert.equal(isScopeMaskEnabled(), false);
+  assert.doesNotMatch(indexHtml, /id="scope-(?:toggle|feather-slider|feather-value)"/);
+  assert.match(shareSource, /this\._scopeEnabled = false;/);
 });
 
-test('an explicit feather still wins over the subtle default', () => {
+test('legacy feather values can still be parsed for compatible round trips', () => {
   // A link is authored state. The new default governs a session that said
   // nothing; it must never overwrite one that said something.
   assert.equal(managerForHash('#lat=10&lon=20&scf=35').parseInitialHash().scopeFeatherPct, 35);
@@ -110,15 +94,10 @@ test('an explicit feather still wins over the subtle default', () => {
   // is the retired 35 — parsing an archive is not the same question as booting
   // fresh, and this deliberately did NOT move with either later default.
   assert.equal(managerForHash('#lat=10&lon=20&style=normal').parseInitialHash().scopeFeatherPct, 35,
-    'a pre-scf link restores the author\'s view, not the new default');
+    'a pre-scf link preserves historical tuning without drawing it');
 });
 
-test('the subtle default did not weaken the feather control, and 0 is still reachable', () => {
-  // The cheap way to move a default would be to nerf the control. Prove the
-  // slider still spans its full range and the geometry is still DERIVED from
-  // the ratio — a check that would pass vacuously if it only ever saw one value.
-  assert.match(indexHtml, /id="scope-feather-slider"[^>]*\smin="0"[^>]*\smax="100"/,
-    'the slider still offers the whole range');
+test('legacy feather geometry helpers remain available without a UI control', () => {
   const previous = getScopeMaskFeather();
   try {
     for (const ratio of [0.35, 0.7, 1]) {
@@ -136,7 +115,7 @@ test('the subtle default did not weaken the feather control, and 0 is still reac
     assert.ok(Math.abs((soft.outerR - soft.innerR) - keyholeR * SCOPE_FEATHER_RATIO_DEFAULT) < 1e-9,
       'the default really draws its own band, derived from the ratio');
     assert.ok(soft.outerR > soft.innerR, 'and it is a band, not a hard edge');
-    // The hard crop the previous default shipped is still one drag away.
+    // The historical hard-crop geometry remains available to old callers.
     setScopeMaskFeather(0);
     const hard = scopeMaskGeometry(1200, 900);
     assert.equal(hard.outerR, hard.innerR,

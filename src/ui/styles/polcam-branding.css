@@ -1,70 +1,271 @@
-/* Deployment identity. Keep upstream behavior, source and data credits intact. */
+/* PolCam operator workspace. Palette follows the public WB/PolCam identity;
+   the application layout and control system are specific to this product. */
+@font-face {
+  font-family: 'Roboto Condensed';
+  src: url('/fonts/roboto-condensed/RobotoCondensed-Variable.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
 :root {
-  --accent: #58b8eb;
-  --accent-dim: rgba(88, 184, 235, 0.15);
-  --accent-glow: rgba(88, 184, 235, 0.35);
+  --font-sans: 'Roboto Condensed', Arial, sans-serif;
+  --font-mono: 'Roboto Condensed', Arial, sans-serif;
+  --accent: #1072b2;
+  --accent-dim: #e9f2fa;
+  --accent-glow: transparent;
+  --text-primary: #17263c;
+  --text-secondary: #4b5e73;
+  --text-dim: #586b80;
+  --glass-bg: #fff;
+  --glass-border: #cbd5df;
+  --glass-border-hover: #7793af;
+  --panel-radius: 2px;
+  --btn-radius: 2px;
+  --polcam-navy: #1a3077;
+  --polcam-surface: #f2f5f8;
+  --polcam-left: 256px;
+  --polcam-right: 288px;
 }
-
-.brand-logo.polcam-brand-logo {
-  aspect-ratio: 513 / 187;
-  filter: none;
+body[data-layout='polcam'] {
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  caret-color: var(--accent);
+  scrollbar-color: #7e94aa #edf1f5;
 }
-
-#title-bar h1 > .title-logo.polcam-brand-logo {
-  display: block;
-  width: 190px;
-  height: auto;
-  filter: none;
+body[data-layout='polcam'] ::selection { color: #fff; background: #1a3077; }
+body[data-layout='polcam'] :is(button, input, select, textarea) { font-family: var(--font-sans); }
+body[data-layout='polcam'] :is(button, a, input, select, [tabindex]):focus-visible { outline-color: #1072b2 !important; outline-offset: 3px; }
+body[data-layout='polcam'] :is(.panel-glow, .title-glow) { display: none; }
+.polcam-appbar {
+  position: fixed; inset: 0 0 auto; height: 64px; z-index: 160;
+  background: #fff; border-bottom: 3px solid var(--polcam-navy);
+  display: flex; align-items: center; pointer-events: auto;
 }
-
-#title-bar .title-glow {
-  background: #1f3864;
+body[data-layout='polcam'] #title-bar {
+  position: static; display: flex; align-items: center; gap: 20px;
+  padding: 0 22px; text-align: left; transform: none;
 }
-
-#title-bar .subtitle {
-  margin-top: 0;
-  font-size: 10px;
-  letter-spacing: 2.3px;
-  color: rgba(232, 234, 237, 0.7);
+body[data-layout='polcam'] #title-bar h1 { margin: 0; line-height: 1; }
+.brand-logo.polcam-brand-logo { aspect-ratio: 513 / 187; filter: none; }
+body[data-layout='polcam'] #title-bar h1 > .polcam-brand-logo { display: block; width: 128px; height: auto; filter: none; }
+.polcam-product-name { border-left: 1px solid #cbd5df; padding-left: 20px; font-size: 21px; font-weight: 600; line-height: 1.1; color: #1a3077; }
+.polcam-product-name span { display: block; font-size: 12px; font-weight: 400; margin-top: 3px; color: #4b5e73; }
+.polcam-workspace-name { display: flex; align-items: center; gap: 9px; margin-left: 24px; font-size: 15px; color: #4b5e73; }
+.polcam-workspace-name .material-symbols-outlined { font-size: 21px; }
+body[data-layout='polcam'] #style-indicator { position: fixed; top: 20px; right: 276px; z-index: 170; text-align: right; }
+body[data-layout='polcam'] #style-indicator .indicator-label { display: none; }
+body[data-layout='polcam'] #active-style-name { font: 600 12px var(--font-sans); letter-spacing: .06em; color: #1a3077; text-shadow: none; }
+body[data-layout='polcam'] #top-center-actions { position: fixed; top: 10px; right: 16px; left: auto; transform: none; z-index: 170; gap: 5px; }
+body[data-layout='polcam'] #top-center-actions button { width: 40px; height: 40px; background: #f2f5f8; color: #1a3077; border: 1px solid #d7dfe7; border-radius: 2px; box-shadow: none; backdrop-filter: none; }
+body[data-layout='polcam'] #top-center-actions button:hover { background: #dfeaf5; border-color: #1072b2; }
+body[data-layout='polcam'] #top-center-actions .material-symbols-outlined { font-size: 21px; }
+body[data-layout='polcam'] #top-center-actions .camera-compass-n { color: #1a3077; }
+body[data-layout='polcam'] #left-panel-stack,
+body[data-layout='polcam'] #right-context-rail {
+  position: fixed; top: 80px; bottom: 116px; max-height: none;
+  display: flex; flex-direction: column; gap: 8px; align-items: stretch;
+  overflow-y: auto; overflow-x: hidden; scrollbar-width: thin;
+  padding: 0 2px 4px; transition: none; pointer-events: none;
 }
-
-.loader-logo.polcam-brand-logo {
-  width: min(320px, 80vw);
-  margin-bottom: 20px;
-  animation: none;
+body[data-layout='polcam'] #left-panel-stack { right: auto; left: 16px; width: var(--polcam-left); }
+body[data-layout='polcam'] #right-context-rail { left: auto; right: 16px; width: var(--polcam-right); }
+body[data-layout='polcam'] :is(#left-panel-stack, #right-context-rail) > [data-panel-id],
+body[data-layout='polcam'] #right-context-rail > #pp-toggles {
+  position: relative; inset: auto; width: 100% !important; min-width: 0; max-width: 100%;
+  max-height: none; flex: 0 0 auto; margin: 0; transform: none;
+  pointer-events: auto; border-radius: 2px;
 }
-
-.loader-content h2 {
-  letter-spacing: 2px;
+body[data-layout='polcam'] :is(.data-panel-inner, .scene-panel-inner, .cctv-panel-inner, .radio-panel-inner, .global-context-panel-inner, .panel-inner, .location-inner) {
+  background: #fff; color: var(--text-primary); border: 1px solid #cbd5df;
+  border-radius: 2px; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none;
+  padding: 12px; max-height: none;
 }
-
-@media (max-width: 720px) {
-  #title-bar h1 > .title-logo.polcam-brand-logo {
-    width: 140px;
-  }
-
-  #title-bar .subtitle {
-    font-size: 8px;
-    letter-spacing: 1.4px;
-  }
+body[data-layout='polcam'] :is(#left-panel-stack, #right-context-rail) .collapsed > :is(.data-panel-inner, .scene-panel-inner, .cctv-panel-inner, .radio-panel-inner, .global-context-panel-inner) { padding: 8px 12px; }
+body[data-layout='polcam'] :is(.panel-header, .pp-header-row) { margin: 0 0 12px; padding: 0; min-height: 32px; gap: 8px; }
+body[data-layout='polcam'] .collapsed :is(.panel-header, .pp-header-row) { margin-bottom: 0; }
+body[data-layout='polcam'] :is(.panel-title, .pp-label) { color: #1a3077; font: 600 15px var(--font-sans); text-transform: none; letter-spacing: 0; }
+body[data-layout='polcam'] .panel-divider { background: #dfe5ec; }
+body[data-layout='polcam'] .panel-collapse-btn { flex: 0 0 32px; width: 32px; height: 32px; border: 1px solid #cbd5df; border-radius: 2px; color: #1a3077; background: #f2f5f8; font-size: 19px; }
+body[data-layout='polcam'] .panel-collapse-btn:hover { background: #dfeaf5; }
+body[data-layout='polcam'] #data-toggles { max-height: min(58vh, 560px); padding-right: 2px; }
+body[data-layout='polcam'] .data-layer-group-heading { font-size: 12px; color: #4b5e73; letter-spacing: .02em; padding-top: 12px; border-color: #dfe5ec; margin-left: 2px; }
+body[data-layout='polcam'] .data-toggle-row { border-radius: 0; padding: 9px 3px; border-bottom: 1px solid #edf1f5; }
+body[data-layout='polcam'] .data-toggle-row:hover { background: #f2f5f8; }
+body[data-layout='polcam'] :is(.data-toggle-label, .data-toggle-name) { font-size: 13px; color: #17263c; letter-spacing: 0; }
+body[data-layout='polcam'] :is(.data-toggle-count, .data-layer-count, .data-toggle-status) { font-size: 11px; color: #4b5e73; letter-spacing: 0; }
+body[data-layout='polcam'] :is(.scene-btn, .pp-toggle-btn, .location-pill, .poi-pill, .style-btn, .map-stack-chip, .cctv-cal-value, .context-mode-button) {
+  border-radius: 2px; background: #f2f5f8; border-color: #cbd5df; color: #344c65;
+  box-shadow: none; text-shadow: none; font-size: 12px; letter-spacing: .01em;
 }
-
-@media (max-width: 520px) {
-  #title-bar h1 > .title-logo.polcam-brand-logo {
-    width: 112px;
-  }
+body[data-layout='polcam'] :is(.scene-btn, .pp-toggle-btn, .location-pill, .poi-pill, .style-btn, .map-stack-chip):hover { background: #e4edf6; color: #1a3077; border-color: #7793af; box-shadow: none; }
+body[data-layout='polcam'] :is(.scene-btn, .pp-toggle-btn, .location-pill, .poi-pill, .style-btn, .map-stack-chip).active { background: #1a3077; border-color: #1a3077; color: #fff; box-shadow: none; }
+body[data-layout='polcam'] :is(.scene-btn, .pp-toggle-btn) { min-height: 30px; }
+body[data-layout='polcam'] button:disabled { opacity: .5; cursor: not-allowed; }
+body[data-layout='polcam'] :is(select, input[type='text'], input[type='number'], input[type='search']) { background: #f2f5f8; color: #17263c; border: 1px solid #cbd5df; border-radius: 2px; font-size: 13px; }
+body[data-layout='polcam'] input::placeholder { color: #586b80; }
+body[data-layout='polcam'] select option { background: #fff; color: #17263c; }
+body[data-layout='polcam'] #pp-toggles { background: #fff; border: 1px solid #cbd5df; padding: 12px; box-shadow: none; backdrop-filter: none; }
+body[data-layout='polcam'] #pp-toggles.collapsed { padding: 8px 12px; }
+body[data-layout='polcam'] .pp-toggle-group { border-color: #dfe5ec; }
+body[data-layout='polcam'] :is(.pp-toggle-label, .pp-slider-label, .pp-control-label) { color: #4b5e73; font-size: 12px; letter-spacing: 0; }
+body[data-layout='polcam'] #cctv-frame-wrap { border-radius: 0; background: #e2e8ef; }
+body[data-layout='polcam'] :is(#cctv-meta, #cctv-summary, #scene-status, .global-context-status, .global-context-empty) { font-size: 12px; line-height: 1.4; letter-spacing: 0; color: #4b5e73; }
+body[data-layout='polcam'] #cctv-source-badge { border-radius: 2px; font-size: 11px; background: #e9f2fa; border-color: #b2cbe0; color: #155681; }
+body[data-layout='polcam'] .cctv-calibration-panel { background: #f2f5f8; border-color: #dfe5ec; border-radius: 2px; }
+body[data-layout='polcam'] .cctv-summary-label { color: #4b5e73; font-size: 11px; }
+body[data-layout='polcam'] #command-dock {
+  position: fixed; left: 50%; bottom: 40px; top: auto; transform: translateX(-50%);
+  border-radius: 2px; background: #fff; border: 1px solid #cbd5df; box-shadow: 0 4px 12px #152a461a;
+  padding: 0; min-height: 52px; gap: 0; backdrop-filter: none;
+  --dock-side-compact: 170px; --dock-voice-width: 160px;
 }
-
-.polcam-credits {
-  align-self: flex-start;
-  margin-top: 10px;
-  color: var(--text-secondary);
-  font: 10px var(--font-mono);
-  text-underline-offset: 3px;
+body[data-layout='polcam'] #command-dock :is(.panel-inner, .location-inner) { background: transparent; border: 0; border-radius: 0; box-shadow: none; min-height: 52px; }
+body[data-layout='polcam'] #command-dock :is(.panel-title, .location-toolbar-label) { font-size: 13px; letter-spacing: .01em; color: #1a3077; }
+body[data-layout='polcam'] #command-dock :is(.panel-title, .location-toolbar-label)::after { color: #1072b2; }
+body[data-layout='polcam'] #command-dock .dock-label-icon { filter: none; }
+body[data-layout='polcam'] #command-dock .dock-popover-content { background: #fff; color: #17263c; border: 1px solid #cbd5df; border-radius: 2px; box-shadow: 0 4px 16px #10203a22; backdrop-filter: none; }
+body[data-layout='polcam'] :is(.panel-mini-value, .location-mini-city, .location-mini-poi) { text-shadow: none; color: #4b5e73; letter-spacing: 0; font-size: 11px; }
+body[data-layout='polcam'] #command-dock #gev-voice-control { background: #1a3077; color: #fff; border: 0; border-radius: 0; box-shadow: none; backdrop-filter: none; min-width: 0; padding: 8px 12px; }
+body[data-layout='polcam'] #gev-voice-button { color: #fff; border: 1px solid #91a8d5; background: transparent; border-radius: 2px; box-shadow: none; }
+body[data-layout='polcam'] :is(#gev-voice-status, #gev-voice-detail, .gev-voice-cost-readout) { color: #fff; font-size: 10px; letter-spacing: 0; }
+body[data-layout='polcam'] #intel-hud { color: #17263c; --hud-color: #17263c; --hud-glow: transparent; }
+body[data-layout='polcam'] #intel-hud * { text-shadow: none; font-family: var(--font-sans); }
+.polcam-map-context {
+  position: fixed; top: 80px; left: calc(var(--polcam-left) + 48px); right: calc(var(--polcam-right) + 48px);
+  padding: 10px 14px; background: #ffffffed; border-radius: 2px; color: #17263c;
 }
-
-@media (max-width: 360px) {
-  #title-bar h1 > .title-logo.polcam-brand-logo {
-    width: 72px;
-  }
+.polcam-context-title { display: flex; align-items: center; justify-content: space-between; color: #1a3077; font-size: 15px; font-weight: 600; }
+body[data-layout='polcam'] #hud-mode { font-size: 11px; color: #4b5e73; }
+body[data-layout='polcam'] #hud-summary { font-size: 12px; line-height: 1.4; letter-spacing: 0; color: #4b5e73; max-width: none; margin-top: 3px; }
+.polcam-statusbar {
+  position: fixed; inset: auto 0 0; min-height: 30px; background: #f2f5f8;
+  border-top: 1px solid #cbd5df; padding: 7px 16px; display: flex; justify-content: space-between;
+  gap: 16px; align-items: center; font-size: 11px; color: #344c65;
 }
+.polcam-statusbar > div { display: flex; gap: 16px; }
+.polcam-statusbar time { white-space: nowrap; }
+body[data-layout='polcam'] #cesium-credits { bottom: 43px; left: 16px; max-width: 26vw; white-space: normal; color: #fff; font-size: 11px; }
+body[data-layout='polcam'] #cesium-credits a { color: #fff; }
+body[data-layout='polcam'] :is(#traffic-sync-chip, #cctv-sync-chip, #global-loading-status) { top: 66px; border-radius: 2px; color: #1a3077; background: #fff; box-shadow: none; letter-spacing: 0; font-size: 12px; }
+body[data-layout='polcam'] #toast { color: #fff; background: #1a3077; border-radius: 2px; box-shadow: 0 4px 16px #10203a22; }
+body[data-layout='polcam'] #loading-screen { background: #1a3077; color: #fff; }
+.loader-logo.polcam-brand-logo { width: min(320px, 80vw); margin-bottom: 20px; animation: none; }
+body[data-layout='polcam'] .loader-content :is(h2, .loader-status, .title-accent) { color: #fff; letter-spacing: 0; }
+.polcam-credits { align-self: flex-start; margin-top: 10px; color: #4b5e73; font: 12px var(--font-sans); text-underline-offset: 3px; }
+body.ui-clean-view .polcam-appbar { opacity: 0; visibility: hidden; pointer-events: none; }
+@media (max-width: 1100px) {
+  :root { --polcam-left: 224px; --polcam-right: 248px; }
+  .polcam-workspace-name { display: none; }
+  .polcam-map-context { display: none; }
+  .polcam-statusbar #hud-mgrs, .polcam-statusbar #hud-ona { display: none; }
+  body[data-layout='polcam'] #cesium-credits { max-width: 24vw; }
+}
+@media (max-width: 800px) {
+  :root { --polcam-left: 180px; --polcam-right: 200px; }
+  body[data-layout='polcam'] #title-bar { padding: 0 12px; gap: 10px; }
+  body[data-layout='polcam'] #title-bar h1 > .polcam-brand-logo { width: 100px; }
+  .polcam-product-name { padding-left: 12px; font-size: 18px; }
+  body[data-layout='polcam'] #style-indicator { display: none; }
+  body[data-layout='polcam'] #top-center-actions { right: 10px; }
+  body[data-layout='polcam'] #left-panel-stack { left: 10px; }
+  body[data-layout='polcam'] #right-context-rail { right: 10px; }
+  body[data-layout='polcam'] #command-dock { --dock-side-compact: 135px; --dock-voice-width: 130px; }
+  body[data-layout='polcam'] #cesium-credits { bottom: 100px; left: 12px; max-width: calc(100vw - 24px); }
+  .polcam-statusbar .polcam-camera { display: none; }
+}
+@media (max-width: 560px) {
+  .polcam-appbar { height: 58px; }
+  .polcam-product-name { font-size: 17px; }
+  .polcam-product-name span { font-size: 10px; }
+  body[data-layout='polcam'] #top-center-actions { top: 66px; right: 8px; gap: 3px; }
+  body[data-layout='polcam'] #top-center-actions button { width: 36px; height: 36px; }
+  body[data-layout='polcam'] #left-panel-stack,
+  body[data-layout='polcam'] #right-context-rail { top: 114px; bottom: 130px; width: calc(50vw - 12px); gap: 6px; padding: 0; }
+  body[data-layout='polcam'] #left-panel-stack { left: 8px; }
+  body[data-layout='polcam'] #right-context-rail { right: 8px; }
+  body[data-layout='polcam'] :is(.panel-title, .pp-label) { font-size: 13px; }
+  body[data-layout='polcam'] :is(#left-panel-stack, #right-context-rail):has(> :not(.collapsed)[data-panel-id]) { width: calc(100vw - 16px); z-index: 125; }
+  body[data-layout='polcam'] #right-context-rail:has(> #pp-toggles:not(.collapsed)) { width: calc(100vw - 16px); z-index: 126; }
+  body[data-layout='polcam'] :is(.data-panel-inner, .scene-panel-inner, .cctv-panel-inner, .global-context-panel-inner) { padding: 10px; }
+  body[data-layout='polcam'] .panel-collapse-btn { width: 30px; height: 30px; flex-basis: 30px; }
+  body[data-layout='polcam'] #command-dock { width: calc(100vw - 16px); max-width: none; bottom: 38px; --dock-side-compact: calc((100vw - 96px) / 2); --dock-voice-width: 64px; }
+  body[data-layout='polcam'] #command-dock #gev-voice-control { width: 64px; padding: 6px; }
+  body[data-layout='polcam'] #command-dock :is(.panel-title, .location-toolbar-label) { font-size: 11px; }
+  body[data-layout='polcam'] #command-dock .gev-voice-readout { display: none; }
+  body[data-layout='polcam'] #command-dock .dock-popover-content { max-width: calc(100vw - 16px); }
+  body[data-layout='polcam'] #cesium-credits { bottom: 97px; }
+  .polcam-statusbar { padding: 7px 8px; font-size: 10px; gap: 4px; }
+  .polcam-statusbar time { max-width: 90px; overflow: hidden; }
+  body[data-layout='polcam'] :is(#traffic-sync-chip, #cctv-sync-chip, #global-loading-status) { top: 62px; left: 8px; right: auto; max-width: calc(100vw - 214px); transform: none; font-size: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  body[data-layout='polcam'] * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+/* Normalize disclosure headings across the former tactical/collapsed skins. */
+body[data-layout='polcam'] :is(#left-panel-stack, #right-context-rail) :is(.panel-title, .pp-label) {
+  font: 600 14px var(--font-sans) !important; letter-spacing: 0 !important;
+  color: #1a3077; text-transform: none;
+}
+body[data-layout='polcam'] #intel-hud .polcam-statusbar * { color: #344c65; }
+body[data-layout='polcam'] #intel-hud .polcam-context-title { color: #1a3077; }
+body[data-layout='polcam'] #intel-hud[data-variant='minimal'] .polcam-map-context,
+body[data-layout='polcam'] #intel-hud[data-variant='minimal'] :is(.polcam-camera, #hud-mgrs) { display: none; }
+body[data-layout='polcam'] #intel-hud[data-variant='operator'] .polcam-map-context { border-top: 2px solid #1072b2; }
+body.recording-mode .polcam-appbar { opacity: 0; visibility: hidden; pointer-events: none; }
+body[data-layout='polcam'] #left-panel-stack > .collapsed .panel-divider,
+body[data-layout='polcam'] #right-context-rail > .collapsed .panel-divider { background: #dfe5ec; }
+body[data-layout='polcam'] #left-panel-stack .data-toggle-btn { border-radius: 2px; background: #e7edf3; color: #344c65; border: 1px solid #cbd5df; font-size: 10px; letter-spacing: 0; }
+body[data-layout='polcam'] #left-panel-stack .data-toggle-btn.active { background: #1a3077; color: #fff; border-color: #1a3077; }
+body[data-layout='polcam'] #cesium-credits { line-height: 1.25; }
+body[data-layout='polcam'] #command-dock .dock-label-icon { opacity: 1; filter: brightness(.25); }
+body[data-layout='polcam'] #command-dock .dock-tray-toggle { min-width: 0; width: 100%; }
+body[data-layout='polcam'] #command-dock :is(.location-toolbar, .panel-header) { min-width: 0; }
+@media (max-width: 560px) {
+  body[data-layout='polcam'] #right-context-rail { left: auto; right: 8px; }
+  body[data-layout='polcam'] #left-panel-stack { right: auto; left: 8px; }
+  body[data-layout='polcam'] :is(#left-panel-stack, #right-context-rail) :is(.panel-title, .pp-label) { font-size: 12px !important; }
+  body[data-layout='polcam'] #command-dock :is(.panel-title, .location-toolbar-label) { width: auto; max-width: 100%; font-size: 11px; }
+  body[data-layout='polcam'] #command-dock :is(.panel-title, .location-toolbar-label)::after { display: none; }
+  body[data-layout='polcam'] #command-dock .dock-label-icon { display: none; }
+}
+body[data-layout='polcam'] #cesium-credits { bottom: 43px !important; }
+body[data-layout='polcam'] #key-setup-chip { bottom: 43px; right: 16px; color: #1a3077; border: 1px solid #cbd5df; border-radius: 2px; background: #fff; box-shadow: none; font-size: 11px; letter-spacing: 0; }
+body[data-layout='polcam'] #key-setup-chip .material-symbols-outlined { color: #1072b2; }
+body[data-layout='polcam'] .global-context-panel-inner { background: #fff; border: 1px solid #cbd5df; border-radius: 2px; box-shadow: none; backdrop-filter: none; }
+body[data-layout='polcam'] :is(.context-mode-button, .global-context-item, .global-context-disclosure) { background: #f2f5f8; color: #344c65; border-color: #cbd5df; border-radius: 2px; font-size: 12px; }
+body[data-layout='polcam'] .context-mode-button[aria-pressed='true'] { color: #fff; background: #1a3077; }
+@media (max-width: 800px) {
+  body[data-layout='polcam'] #cesium-credits { bottom: 100px !important; }
+}
+@media (max-width: 560px) {
+  body[data-layout='polcam'] #cesium-credits { bottom: 97px !important; }
+  body[data-layout='polcam'] #key-setup-chip { top: 67px; bottom: auto; left: 8px; right: auto; width: calc(100vw - 212px); max-width: 164px; padding: 6px; font-size: 10px; }
+}
+body[data-layout='polcam']:is(.ui-clean-view, .recording-mode) #cesium-credits { bottom: 12px !important; max-width: calc(100vw - 32px); }
+body[data-layout='polcam'] :is(#first-run-launcher, #key-setup) { background: #fff; color: #17263c; border: 1px solid #cbd5df; border-radius: 2px; box-shadow: 0 12px 36px #10203a33; backdrop-filter: none; }
+body[data-layout='polcam'] :is(.first-run-scanline, .key-setup-scanline) { background: #1a3077; box-shadow: none; }
+body[data-layout='polcam'] :is(.first-run-header, .first-run-footer, .first-run-kicker, .first-run-note, .first-run-suppress, #first-run-description, .key-setup-kicker, #key-setup-description, .key-setup-note, .key-setup-hint) { color: #4b5e73; font-size: 12px; letter-spacing: 0; }
+body[data-layout='polcam'] :is(#first-run-launcher, #key-setup) h2 { color: #1a3077; letter-spacing: 0; }
+body[data-layout='polcam'] .first-run-choices button { background: #f2f5f8; color: #17263c; border: 1px solid #cbd5df; border-radius: 2px; box-shadow: none; }
+body[data-layout='polcam'] .first-run-choices button:hover { background: #e4edf6; border-color: #1072b2; }
+body[data-layout='polcam'] .first-run-choices :is(strong, .material-symbols-outlined) { color: #1a3077; }
+body[data-layout='polcam'] .first-run-choices small { color: #4b5e73; }
+body[data-layout='polcam'] #right-context-rail #pp-toggles > .pp-header-row { width: 100%; padding: 0; background: transparent; border: 0; box-shadow: none; backdrop-filter: none; border-radius: 0; }
+body[data-layout='polcam'] #right-context-rail #pp-toggles .pp-header-label { font: 600 14px var(--font-sans); letter-spacing: 0; color: #1a3077; }
+body[data-layout='polcam'] #right-context-rail #pp-toggles > .pp-toggle-group { background: transparent; border: 0; border-top: 1px solid #dfe5ec; border-radius: 0; box-shadow: none; backdrop-filter: none; padding: 10px 0; }
+body[data-layout='polcam'] #pp-toggles :is(.pp-slider-mini-label, .pp-slider-value, .pp-mode-btn) { font-size: 11px; letter-spacing: 0; color: #4b5e73; }
+body[data-layout='polcam'] #pp-toggles .pp-mode-btn { background: #f2f5f8; border-color: #cbd5df; border-radius: 2px; }
+body[data-layout='polcam'] #pp-toggles .pp-mode-btn.active { background: #1a3077; color: #fff; }
+body[data-layout='polcam'] #pp-toggles .pp-toggle-btn.active .pp-label { color: #fff; }
+body[data-layout='polcam'] .context-radio-toggle { background: #f2f5f8; border-color: #cbd5df; color: #1a3077; border-radius: 2px; }
+@media (max-width: 560px) { body[data-layout='polcam'] #right-context-rail #pp-toggles .pp-header-label { font-size: 12px; } }
+body[data-layout='polcam'] #right-context-rail #cctv-panel :is(.scene-btn.active, .cctv-cal-value.active) { color: #fff; background: #1a3077; border-color: #1a3077; box-shadow: none; }
+body[data-layout='polcam'] #right-context-rail #pp-toggles > .pp-header-row .pp-collapse-btn { width: 32px; height: 32px; font-size: 16px; border-radius: 2px; }
+/* Reserve a source-credit lane below the command strip on narrow screens.
+   Popovers open upward, so attribution remains reachable even with pinned trays. */
+@media (max-width: 800px) {
+  body[data-layout='polcam'] :is(#left-panel-stack, #right-context-rail) { bottom: 164px; }
+  body[data-layout='polcam'] #command-dock { bottom: 80px; }
+  body[data-layout='polcam'] #cesium-credits { bottom: 38px !important; }
+}
+body[data-layout='polcam']:is(.ui-clean-view, .recording-mode) #cesium-credits { bottom: 52px !important; }

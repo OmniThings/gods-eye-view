@@ -92,13 +92,18 @@ const PAINT_LANE_INDEX = new Map(
  * backdrop-filled cockpit windows survive as exclusions.
  */
 export const WORLD_OVERLAY_OCCLUDER_SELECTORS = Object.freeze([
+  '.polcam-appbar',
+  '.polcam-statusbar',
+  '.polcam-map-context',
   '#title-bar',
   '#style-indicator',
   '#top-center-actions',
   '#traffic-sync-chip',
   '#cctv-sync-chip',
-  '#left-panel-stack',
-  '#right-context-rail',
+  '#data-panel',
+  '#scene-panel',
+  '#cctv-panel',
+  '#global-context-panel',
   '#pp-toggles',
   '#command-dock',
   '#gev-voice-control',

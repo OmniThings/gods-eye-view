@@ -59,7 +59,7 @@
     <div class="pp-toggle-group">
       <!-- 3D aircraft is DEFAULT-ON in Proximity (owner directive 2026-08-22), so the
            button ships lit and the mode row ships open — the same markup-carries-the-default
-           convention as #scope-toggle. ui.js re-syncs both from durable layer state, which
+           convention as the other display toggles. ui.js re-syncs durable layer state, which
            is what flips them back for a share link or a stored session carrying 3D off. -->
       <button class="pp-toggle-btn active" id="models3d-toggle" aria-pressed="true" title="3D aircraft — flat icons zoomed out, 3D models up close">
         <span class="pp-icon">&#x2708;</span>
@@ -71,22 +71,6 @@
           <button class="pp-mode-btn active" id="models3d-mode-proximity" data-mode="proximity" role="radio" aria-checked="true">Proximity</button>
           <button class="pp-mode-btn" id="models3d-mode-all" data-mode="all" role="radio" aria-checked="false">All</button>
         </div>
-      </div>
-    </div>
-    <div class="pp-toggle-group">
-      <button class="pp-toggle-btn active" id="scope-toggle" title="Scope — the circular viewport mask" aria-pressed="true">
-        <span class="pp-icon material-symbols-outlined" aria-hidden="true">adjust</span>
-        <span class="pp-label">Scope</span>
-      </button>
-      <div class="pp-slider-row visible" id="scope-slider-row">
-        <span class="pp-slider-mini-label">Feather</span>
-        <!-- Feather starts at an 11% soft scope-mask edge (owner final lock
-             2026-08-24, superseding the 08-22 hard-crop and 08-23 8% rulings);
-             mirrors SCOPE_FEATHER_RATIO_DEFAULT in src/scopeMask.js. Feather
-             softens the black mask edge; label fading is the separate Fade
-             slider. -->
-        <input type="range" class="pp-slider" id="scope-feather-slider" min="0" max="100" value="11" aria-label="Scope edge feather" title="Scope edge feather as a percentage of the keyhole radius" />
-        <span class="pp-slider-value" id="scope-feather-value">11%</span>
       </div>
     </div>
     <div class="pp-toggle-group">

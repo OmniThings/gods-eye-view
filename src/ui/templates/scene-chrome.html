@@ -7,12 +7,13 @@
     <div id="world-overlay-status" role="status" aria-live="polite" aria-atomic="true"></div>
   </div>
 
-  <!-- Title -->
-  <div id="title-bar">
-    <div class="title-glow"></div>
-    <h1><span class="title-logo brand-logo polcam-brand-logo"><img src="/branding/polcam-logo-white.png" alt="PolCam / WB Group" width="513" height="187" /></span></h1>
-    <p class="subtitle">SITUATIONAL AWARENESS</p>
-  </div>
+  <header class="polcam-appbar" aria-label="PolCam Monitoring">
+    <div id="title-bar">
+      <h1><span class="title-logo brand-logo polcam-brand-logo"><img src="/branding/polcam-logo-color.png" alt="PolCam / WB Group" width="513" height="187" /></span></h1>
+      <div class="polcam-product-name">Monitoring<span>OmniMotion</span></div>
+    </div>
+    <div class="polcam-workspace-name"><span class="material-symbols-outlined" aria-hidden="true">public</span>Mapa operacyjna</div>
+  </header>
 
   <!-- Style indicator -->
   <div id="style-indicator">
@@ -26,7 +27,7 @@
       <span class="material-symbols-outlined" aria-hidden="true">layers_clear</span>
     </button>
     <button id="share-btn" type="button" aria-label="Copy share link" title="Copy share link">
-      <span class="share-icon" aria-hidden="true">&#x1F517;</span>
+      <svg class="share-icon" aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="m10 13 4-4M8 16l-2 2a4 4 0 0 1-6-6l5-5a4 4 0 0 1 6 0M16 8l2-2a4 4 0 0 1 6 6l-5 5a4 4 0 0 1-6 0" transform="translate(2 0) scale(.83 1)"/></svg>
     </button>
     <button id="tilt-map-view" type="button" aria-label="Tilt map to oblique view" aria-pressed="false" title="Toggle straight-down and tilted map views">
       <span class="material-symbols-outlined" aria-hidden="true">view_in_ar</span>

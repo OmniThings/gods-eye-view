@@ -745,5 +745,9 @@
   "scripts/qa-director-interactions.mjs",
   "src/director/sharing/sharing.test.mjs",
   "scripts/qa-director-sharing.mjs",
-  "src/data/aisStreamSentinels.test.mjs"
+  "src/data/aisStreamSentinels.test.mjs",
+  "src/ui/polcamPanelRail.js",
+  "src/ui/polcamPanelRail.test.mjs",
+  "src/polcamHud.test.mjs",
+  "scripts/qa-polcam-attribution.mjs"
 ]

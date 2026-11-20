@@ -57,6 +57,32 @@ function installClipboard(writeText) {
   });
 }
 
+test('PolCam ignores missing, enabled and disabled legacy scope flags', () => {
+  for (const suffix of ['', '&sc=1', '&sc=0', '&sc=garbage']) {
+    assert.equal(makeManager(`#v=2&lat=10&lon=20${suffix}`).parseInitialHash().scopeEnabled, false);
+  }
+});
+
+test('PolCam share generation always records an unobscured viewport', () => {
+  const manager = makeManager();
+  assert.equal(manager._buildHashParams().get('sc'), '0');
+  manager.onToggleChange(false, false, { scopeEnabled: true });
+  clearTimeout(manager._debounceTimer);
+  assert.equal(manager._buildHashParams().get('sc'), '0', 'old callers cannot export a mask-enabled link');
+});
+
+test('restoring old share and scene preferences never enables the retired mask', async () => {
+  const requests = [];
+  const settings = {
+    services: { setScopeMaskEnabled: (enabled) => requests.push(enabled) },
+    _applyDetectionFadeFromUi() {},
+    _syncShareState() {},
+  };
+  await VisualSettings.prototype.restoreShareState.call(settings, { scopeEnabled: true });
+  assert.equal(await VisualSettings.prototype.applyVisualState.call(settings, { scope: { enabled: true } }), true);
+  assert.deepEqual(requests, [false, false]);
+});
+
 test('share links without cr default the celestial ring off', () => {
   const manager = makeManager('#lat=10&lon=20&style=normal');
   assert.equal(manager.parseInitialHash().celestialRing, false);
